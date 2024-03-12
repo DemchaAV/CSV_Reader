@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class CSV_run {
-    public static void main(String[] args) throws IOException {
+class CSV_run {
+    public void run() throws IOException {
         long start = System.nanoTime();
         String path = "C:/Users/Demch/OneDrive/Рабочий стол/English learning/";
         String nameFile = "Favorites_20240311.csv";

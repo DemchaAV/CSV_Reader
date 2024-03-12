@@ -29,8 +29,6 @@ public class CSV_Import {
     }
 
     public void multithreading(String inPath, char separator, String outputPath, List<Integer> connectList, List<Integer> columnsList) throws RuntimeException {
-
-
         if (columnsList.containsAll(connectList)) {
             Thread reader = new Thread(() -> {
                 try (BufferedReader br = new BufferedReader(new FileReader(inPath))) {
