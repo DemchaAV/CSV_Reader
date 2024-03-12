@@ -90,16 +90,6 @@ public class CSV_Import {
         }
     }
 
-    public <K, V> Map<K, V> transferColomn(Map<K, V> mapIn, int... columns) {
-        Map<K, V> mapOut = new LinkedHashMap<>();
-        for (int i = 0; i < columns.length; i++) {
-            mapOut.put((K) keys.get(columns[i] - 1), (V) mapIn.get(keys.get(columns[i] - 1)));
-
-        }
-        return mapOut;
-
-    }
-
     public void multithreading(String inPath, char separator, String outputPath, int[] connect, int... columns) {
         List<Integer> connectList = Arrays.stream(connect).boxed().collect(Collectors.toList());
         List<Integer> columnsList = Arrays.stream(columns).boxed().collect(Collectors.toList());
@@ -109,6 +99,16 @@ public class CSV_Import {
     public void multithreading(String inPath, char separator, String outputPath, List<Integer> connectList, int... columns) {
         List<Integer> columnsList = Arrays.stream(columns).boxed().collect(Collectors.toList());
         multithreading(inPath, separator, outputPath, connectList, columnsList);
+    }
+
+    public <K, V> Map<K, V> transferColomn(Map<K, V> mapIn, int... columns) {
+        Map<K, V> mapOut = new LinkedHashMap<>();
+        for (int i = 0; i < columns.length; i++) {
+            mapOut.put((K) keys.get(columns[i] - 1), (V) mapIn.get(keys.get(columns[i] - 1)));
+
+        }
+        return mapOut;
+
     }
 
     public <K extends String, V extends List> void print() {
@@ -324,7 +324,7 @@ public class CSV_Import {
         return setSeparatorAndConnect(list, separator, connectList, columnsList);
     }
 
-    private static <K extends String, V extends Integer> Map<K, V> wigthColumns(Map<?, List<String>> map, List<?> keys) {
+    private  <K extends String, V extends Integer> Map<K, V> wigthColumns(Map<?, List<String>> map, List<?> keys) {
         Map<K, V> leght = new LinkedHashMap<>();
         for (int i = 0; i < map.size(); i++) {
             leght.put((K) keys.get(i), (V) sizeColomn((K) keys.get(i), map.get(keys.get(i))));
@@ -338,7 +338,7 @@ public class CSV_Import {
         return doneList;
     }
 
-    private static <T extends String> Integer sizeColomn(String key, List<T> list) {
+    private  <T extends String> Integer sizeColomn(String key, List<T> list) {
         int max = key.length();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).length() > max) {
