@@ -290,27 +290,28 @@ public class CSV_Import {
         if (list.get(4).equals("en")) {
             for (int i = 0; i < colomnsList.size(); i++) {
                 if (doneList.isEmpty() && connectList.contains(colomnsList.get(i)) && i < colomnsList.size()) {
-                    line.append(separator);
+                    line.append("\"\""+separator);
                     doneList.addAll(conector.getDoneList());
-                    line.append(conector.getValue().toLowerCase());
+                    line.append("\""+conector.getValue().toLowerCase()+"\"");
                     line.append(separator);
                 } else if (!doneList.contains(colomnsList.get(i))) {
                     //setLowerCase if is just target word or translation
                     if (colomnsList.get(i) != 3 && colomnsList.get(i) != 4) {
-                        line.append(list.get(colomnsList.get(i) - 1).toLowerCase() + separator);
+                        line.append("\""+list.get(colomnsList.get(i) - 1).toLowerCase()+"\"" + separator);
                     } else {
                         //set as original file character Case
-                        line.append(list.get(colomnsList.get(i) - 1) + separator);
+                        line.append("\""+list.get(colomnsList.get(i) - 1)+"\"" + separator);
                     }
                 }
             }
-            line.append(separator);
+            line.append(("\"")+("\"")+separator);
         } else {
             //reverse translation
-            line.append(list.get(1).toLowerCase() + separator);
-            line.append(list.get(0).toLowerCase() + separator);
+            line.append("\""+list.get(1).toLowerCase()+"\"" + separator);
+            line.append("\""+separator);
+            line.append("\""+list.get(0).toLowerCase()+"\"" + separator);
             for (int i = 2; i < colomnsList.size(); i++) {
-                line.append(list.get(colomnsList.get(i) - 1) + separator);
+                line.append("\""+list.get(colomnsList.get(i) - 1)+"\"" + separator);
             }
 
 

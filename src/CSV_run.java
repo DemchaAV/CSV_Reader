@@ -14,7 +14,7 @@ class CSV_run {
         CSV_Import csv = new CSV_Import();
         try {
             csv.multithreading(
-                    path + nameFile, ';', path + newFileName, new int[]{2, 13}, 1, 2, 9, 3, 4);
+                    path + nameFile, ';', path + newFileName, new int[]{2, 9}, 1, 2, 9, 3, 4);
         } catch (Exception e) {
             System.out.println(e.getMessage() );
             System.out.println("Please write down below a list of columns for connect");
