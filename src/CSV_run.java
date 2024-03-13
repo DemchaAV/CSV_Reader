@@ -1,7 +1,4 @@
-import javax.swing.text.DateFormatter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.Format;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -13,7 +10,8 @@ class CSV_run {
     public void run() throws IOException {
         long start = System.nanoTime();
         String path = "C:/Users/Demch/OneDrive/Рабочий стол/English learning/";
-        String nameFile = "Favorites_"+ LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))+".csv";
+        String curDateFormat = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String nameFile = "Favorites_" + curDateFormat + ".csv";
         System.out.println(nameFile);
         String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
         CSV_Import csv = new CSV_Import();
