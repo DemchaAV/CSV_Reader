@@ -91,7 +91,15 @@ public class CSV_Import {
             try {
                 reader.join();
                 writer.join();
+                File file = new File(outputPath);
+
+                // Получаем размер файла
+                long fileSize = file.length();
+
+                // Выводим размер файла
                 System.out.println("\nWords have done: " + counter);
+                System.out.println("The file size: " + fileSize / 1024.0 + " bait");
+                System.out.println();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 e.printStackTrace();
