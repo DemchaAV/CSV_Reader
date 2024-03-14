@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,12 +12,13 @@ class CSV_run {
         String path = "C:/Users/Demch/OneDrive/Рабочий стол/English learning/";
         String curDateFormat = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String nameFile = "Favorites_" + curDateFormat + ".csv";
-        System.out.println(nameFile);
         String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
         CSV_Import csv = new CSV_Import();
         try {
             csv.multithreading(
                     path + nameFile, ';', null, path + newFileName, new int[]{2, 9}, 1, 2, 9, 3, 4);
+        } catch (RuntimeException run) {
+            run.printStackTrace();
         } catch (Exception e) {
             System.out.println(e.getMessage() );
             System.out.println("Please write down below a list of columns for connect");

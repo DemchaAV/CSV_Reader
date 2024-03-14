@@ -13,6 +13,8 @@ public class CSV_Import {
     Map<String, List<String>> mapCSV = new LinkedHashMap<>();
     private volatile boolean isReadingFinished = false; // Флаг завершения чтения
     List<String> keys = new ArrayList<>();
+    List<String> title;
+    volatile String titleNotify;
     Map<String, Integer> columnWight = new LinkedHashMap<>();
     AtomicInteger counter = new AtomicInteger();
     //    volatile int counter = 0;
@@ -30,82 +32,38 @@ public class CSV_Import {
 
     /**
      *
-     * @param inPath - inPut Path. It is String to our file example "C:/Users/UserName/userFile.csv"
-     * @param separator - variable char to set separator between words for our construction of csv file
-     * @param wrapper - It`s take String parameter to wrapper columns you can put null if you don`t need to wrap our columns or eny character like " or '  etc
-     * @param outputPath - It`s path to save our new File
-     * @param connectList - This`s list contain columns which one will be connected together these columns should be in our columnsList below
-     * @param columnsList - Thi`s  list of columns witch one we will reformat, and reduce if we need before make sure the input file from inPath contain enough colums
+     * @param inPath  inPut Path. It is String to our file example "C:/Users/UserName/userFile.csv"
+     * @param separator  variable char to set separator between words for our construction of csv file
+     * @param wrapper  It`s take String parameter to wrapper columns you can put null if you don`t need to wrap our columns or eny character like " or '  etc
+     * @param outputPath  It`s path to save our new File
+     * @param connectList  This`s list contain columns which one will be connected together these columns should be in our columnsList below
+     * @param columnsList  Thi`s  list of columns witch one we will reformat, and reduce if we need before make sure the input file from inPath contain enough colums
      * @throws RuntimeException En exception shows us if we put connectList which one is not contains in our columns list
      */
 
-    public void multithreading(String inPath, char separator, String wrapper, String outputPath, List<Integer> connectList, List<Integer> columnsList) throws RuntimeException {
-        if (columnsList.containsAll(connectList)) {
+    public void multithreading(
+            String inPath, char separator, String wrapper, String outputPath, List<Integer> connectList, List<Integer> columnsList)
+            throws RuntimeException {
             Thread reader = new Thread(() -> {
-                try (BufferedReader br = new BufferedReader(new FileReader(inPath))) {
-                    String line;
-                    boolean titleStatus = true;
-                    List<String> values;
-                    while ((line = br.readLine()) != null) {
-                        if (titleStatus) {
-                            titleStatus = false;
-                            values = parseCsvLine(line);
-                            for (int i = 0; i < values.size(); i++) {
-                                System.out.print(i + 1 + ". (" + values.get(i) + ") ");
-                            }
-                            System.out.println();
-
-                        } else {
-                            System.out.println(line);
-                            values = parseCsvLine(line);
-                            String changedLine = setSeparatorAndConnect(values, separator, wrapper, connectList, columnsList);
-                            System.out.println(changedLine);
-
-                            abq.put(changedLine);
-                            counter.incrementAndGet();
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    isReadingFinished = true; //make sure it is done
-                }
+                threadReader(inPath, separator, wrapper, connectList, columnsList);
             });
+        reader.setName("Thread - Reader");
 
-            Thread writer = new Thread(() -> {
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
-                    while (!isReadingFinished || !abq.isEmpty()) {
-                        if (!abq.isEmpty()) {
-                            bw.write(abq.take());
-                            bw.newLine();
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+        Thread writer = new Thread(() ->
+                threadWriter(outputPath)
+        );
+        writer.setName("Thread - Writer");
 
-            reader.start();
-            writer.start();
+        reader.start();
+        writer.start();
 
-            try {
-                reader.join();
-                writer.join();
-                File file = new File(outputPath);
-
-                // Получаем размер файла
-                long fileSize = file.length();
-
-                // Выводим размер файла
-                System.out.println("\nWords have done: " + counter);
-                System.out.println("The file size: " + fileSize / 1024.0 + " bait");
-                System.out.println();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                e.printStackTrace();
-            }
-        } else {
-            throw new RuntimeException("The  connecting number is not on your processing list "+ columnsList);
+        try {
+            reader.join();
+            writer.join();
+            info(outputPath);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            e.printStackTrace();
         }
     }
 
@@ -119,6 +77,117 @@ public class CSV_Import {
     public void multithreading(String inPath, char separator, String wrapper, String outputPath, List<Integer> connectList, int... columns) {
         List<Integer> columnsList = Arrays.stream(columns).boxed().collect(Collectors.toList());
         multithreading(inPath, separator, wrapper, outputPath, connectList, columnsList);
+    }
+
+    private void info(String outputPath) {
+        File file = new File(outputPath);
+
+        // Получаем размер файла
+        long fileSize = file.length();
+
+        // Выводим размер файла
+        System.out.println("\nWords processed: " + counter);
+        System.out.printf("The file size: %.3f KB%n", (fileSize / 1024.0));
+        System.out.println();
+    }
+
+    private void threadReader(String inPath, char separator, String wrapper, List<Integer> connectList, List<Integer> columnsList) {
+        FileReader file;
+        try {
+            file = new FileReader(inPath);
+        } catch (FileNotFoundException e) {
+            String nameFile = inPath.substring(inPath.lastIndexOf('/') + 1);
+            isReadingFinished = true;
+            throw new RuntimeException(e + "\nYour file " + nameFile + " is not exist, or not current date" +
+                    "\nDownload yor new file favorite from: " + "https://www.reverso.net/favorites/  or check your inPath and fileName");
+        }
+        try (
+                BufferedReader br = new BufferedReader(file)) {
+            String line;
+            boolean titleStatus = true;
+            while ((line = br.readLine()) != null) {
+                if (titleStatus) {
+                    titleStatus = isTitleStatus(line);
+
+                } else {
+                    lineCreator(separator, wrapper, connectList, columnsList, line);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            isReadingFinished = true; //make sure it is done
+        }
+    }
+
+    /**
+     * method create title of our columns and create an information obout our exists columns in case errors
+     *
+     * @param line input line from reading file
+     * @return boolean to change title status to false
+     */
+    private boolean isTitleStatus(String line) {
+        if (line == null) {
+            return true;
+        }
+        List<String> values;
+        values = parseCsvLine(line);
+        this.title = new ArrayList<>(values);
+        StringBuilder titleNotify = new StringBuilder();
+        for (int i = 0; i < values.size(); i++) {
+            titleNotify.append(i + 1 + ". (" + values.get(i) + ") ");
+        }
+        this.titleNotify = titleNotify.toString();
+        System.out.println();
+        return false;
+    }
+
+    /**
+     * Method create a new String line with our changes and reformatted
+     *
+     * @param separator   how we will separate our columns
+     * @param wrapper     if we need to wrap our columns set character as a String if not set null
+     * @param connectList connecting List  to combine our columns
+     * @param columnsList list of columns for our output file
+     * @param line        inputLine from our reading file
+     * @return changed String line
+     * @throws InterruptedException if our columns oouOfBound
+     */
+    private String lineCreator(char separator, String wrapper, List<Integer> connectList, List<Integer> columnsList, String line) throws InterruptedException {
+        if (isContainNegative(columnsList) || isOverBound(columnsList, title)) {
+            isReadingFinished = true;
+            throw new ArrayIndexOutOfBoundsException("Available columns list are: " + titleNotify);
+        } else {
+            System.out.println(titleNotify);
+        }
+        if (columnsList.containsAll(connectList)) {
+
+            List<String> values;
+            System.out.println(line);
+            values = parseCsvLine(line);
+            String changedLine = setSeparatorAndConnect(values, separator, wrapper, connectList, columnsList);
+            System.out.println(changedLine);
+
+            abq.put(changedLine);
+            counter.incrementAndGet();
+            return changedLine;
+        } else {
+            isReadingFinished = true;
+            throw new RuntimeException("The  connecting number is not on your processing list " + columnsList);
+        }
+    }
+
+    private void threadWriter(String outputPath) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
+            while (!isReadingFinished || !abq.isEmpty()) {
+                if (!abq.isEmpty()) {
+                    bw.write(abq.take());
+                    bw.newLine();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public <K, V> Map<K, V> transferColomn(Map<K, V> mapIn, int... columns) {
@@ -234,7 +303,7 @@ public class CSV_Import {
 
     }
 
-    private static List<String> parseCsvLine(String line) {
+    private List<String> parseCsvLine(String line) {
         List<String> values = new ArrayList<>(4);
         String regex = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"; // Регулярное выражение для разделения, игнорируя запятые внутри кавычек
         Pattern pattern = Pattern.compile(regex);
@@ -254,7 +323,7 @@ public class CSV_Import {
         return values;
     }
 
-    private static String printSpace(int spaces) {
+    private String printSpace(int spaces) {
         StringBuilder s = new StringBuilder();
         if (spaces > 0) {
             for (int i = 0; i < spaces; i++) {
@@ -264,7 +333,7 @@ public class CSV_Import {
         return s.toString() + "││ ";
     }
 
-    private static String line(int spaces) {
+    private String line(int spaces) {
         StringBuilder s = new StringBuilder();
         if (spaces > 0) {
             for (int i = 0; i < spaces; i++) {
@@ -376,6 +445,24 @@ public class CSV_Import {
             }
         }
         return max;
+    }
+
+    private boolean isContainNegative(List<Integer> checkingList) {
+        for (int i = 0; i < checkingList.size(); i++) {
+            if (checkingList.get(i) < 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isOverBound(List<Integer> chekingList, List<String> title) {
+        for (int i = 0; i < chekingList.size(); i++) {
+            if (chekingList.get(i) > title.size()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
