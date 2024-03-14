@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CSV_Import {
-    String path;
+    private String path;
 
 
     Map<String, List<String>> mapCSV = new LinkedHashMap<>();
@@ -384,7 +384,7 @@ public class CSV_Import {
     private String setSeparatorAndConnect(List<String> wordsList, char separator, String wrapper, List<Integer> connectList, List<Integer> columnsList) {
         StringBuilder line = new StringBuilder();
         List<Integer> doneList = new ArrayList<>();
-        Conector conector = new Conector(wordsList, connectList);
+        Connector conector = new Connector(wordsList, connectList);
         wrapper = wrapper == null ? "" : wrapper;
         if (wordsList.get(4).equals("en")) {
             for (int i = 0; i < columnsList.size(); i++) {
