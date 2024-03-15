@@ -32,11 +32,7 @@ listInt2.add(1);
         String nameFile = "Favorites_" + curDateFormat + ".csv";
         String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
         Table table = new Table(path+nameFile);
-//        System.out.println(table.mapTable.keySet());
-//        System.out.println(table.mapTable);
-//        System.out.println(table.getLine(54));
-        table.getColumns(0).forEach(System.out::println);
-        System.out.println(table.getLine(7));
+        table.print();
 
     }
 }

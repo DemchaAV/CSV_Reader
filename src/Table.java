@@ -1,19 +1,17 @@
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class Table {
+public class Table extends CSV_Import {
     ConcurrentHashMap<String, List<String>> mapTable = new ConcurrentHashMap<>();
     private volatile boolean isReadingFinished = false; // Флаг завершения чтения
-    List<String> titleKeys;
     private boolean autoWightStatus = false;
-    Map<String, Integer> columnWight = new LinkedHashMap<>();
+    private int amountLines;
+    private final Out OUT;
 
     public Table(String inPath) {
         reader(inPath);
+        OUT = new Out(mapTable, titleKeys);
     }
 
     private void reader(String inPath) {
@@ -33,6 +31,7 @@ public class Table {
             while ((line = br.readLine()) != null) {
                 if (titleStatus) {
                     titleStatus = isTitleStatus(line);
+                    setKeys();
 
                 } else {
                     putInMap(line);
@@ -41,21 +40,20 @@ public class Table {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            for (Map.Entry<String, List<String>> entery : mapTable.entrySet()) {
+                amountLines = entery.getValue().size();
+                break;
+            }
             isReadingFinished = true; //make sure it is done
         }
     }
 
-    private boolean isTitleStatus(String line) {
-        if (line == null) {
-            return true;
+    private void setKeys() {
+        if (titleKeys != null) {
+            for (int i = 0; i < titleKeys.size(); i++) {
+                mapTable.put(titleKeys.get(i), new ArrayList<>());
+            }
         }
-        List<String> values;
-        values = parseCsvLine(line);
-        this.titleKeys = new ArrayList<>(values);
-        for (int i = 0; i < titleKeys.size(); i++) {
-            mapTable.put(titleKeys.get(i), new ArrayList<>());
-        }
-        return false;
     }
 
     public List<String> getColumns(int columnNumber) {
@@ -72,32 +70,27 @@ public class Table {
         }
     }
 
+    public <K extends String, V extends List> void print() {
+        boolean titleStatus = true;
+        List<String> list;
+        if (titleStatus){
+            OUT.print(titleKeys,true);
+        }
+        for (int i = 0; i < amountLines; i++) {
+            list = getLine(i);
+            OUT.print(list);
+        }
+    }
+
     public List<String> getLine(int numberLine) {
         List<String> line = new ArrayList<>();
         for (int i = 0; i < titleKeys.size(); i++) {
+            if(mapTable.get(titleKeys.get(i)).get(numberLine)==null) {
+                line.add("");
+            }
             line.add(mapTable.get(titleKeys.get(i)).get(numberLine));
         }
         return line;
-    }
-
-    private List<String> parseCsvLine(String line) {
-        List<String> values = new ArrayList<>(4);
-        String regex = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"; // Регулярное выражение для разделения, игнорируя запятые внутри кавычек
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(line);
-
-        int start = 0;
-        while (matcher.find()) {
-            String match = line.substring(start, matcher.start()).trim();
-            values.add(match.replaceAll("\"", "")); // Убираем кавычки, если они есть
-            start = matcher.end();
-        }
-
-        // Добавляем последний элемент
-        String lastValue = line.substring(start).trim();
-        values.add(lastValue.replaceAll("\"", ""));
-
-        return values;
     }
 
     public <K, V> Map<K, V> transferColomn(Map<K, V> mapIn, int... columns) {
@@ -110,56 +103,7 @@ public class Table {
 
     }
 
-    private <K extends String, V extends Integer> Map<K, V> autoWigthColumns(Map<?, List<String>> map, List<?> keys) {
-        Map<K, V> leght = new LinkedHashMap<>();
-        for (int i = 0; i < map.size(); i++) {
-            leght.put((K) keys.get(i), (V) sizeColomn((K) keys.get(i), map.get(keys.get(i))));
-        }
-        return leght;
-    }
 
-    private <T extends String> Integer sizeColomn(String key, List<T> list) {
-        int max = key.length();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).length() > max) {
-                max = list.get(i).length();
-            }
-        }
-        return max;
-    }
-
-    public <K extends String, V extends List> void print() {
-        print(this.mapTable);
-    }
-
-    public <K extends String, V extends List> void print(Map<K, V> mapTable) {
-        Set<K> set = new LinkedHashSet<>(mapTable.keySet());
-        List<K> keys = new ArrayList<>(set.stream().toList());
-        if (mapTable != null) {
-            for (int i = 0; i < mapTable.get(keys.get(0)).size(); i++) {
-                StringBuilder stringLine = new StringBuilder();
-                for (int j = 0; j < mapTable.size(); j++) {
-                    String word;
-                    word = (String) mapTable.get(keys.get(j)).get(i);
-                    stringLine.append(word);
-                    stringLine.append(printSpace(columnWight.get(keys.get(j)) - word.length()));
-                }
-                System.out.println(stringLine);
-                System.out.println(line(sum()));
-
-            }
-        }
-    }
-
-    private String line(int spaces) {
-        StringBuilder s = new StringBuilder();
-        if (spaces > 0) {
-            for (int i = 0; i < spaces; i++) {
-                s.append("_");
-            }
-        }
-        return s.toString() + "___";
-    }
     public <K extends String, V extends List> void write(Map<K, V> mapCSV, String outputPath, char separator) {
         BufferedWriter bw;
         Set<K> set = new LinkedHashSet<>(mapCSV.keySet());
@@ -189,30 +133,6 @@ public class Table {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    private String printSpace(int spaces) {
-        StringBuilder s = new StringBuilder();
-        if (spaces > 0) {
-            for (int i = 0; i < spaces; i++) {
-                s.append(" ");
-            }
-        }
-        return s.toString() + "││ ";
-    }
-
-    /**
-     * this method is providing of the lengthens ours columns to create a line under each print string
-     *
-     * @return int the length ours line
-     */
-    private int sum() {
-        int sum = 0;
-        for (Map.Entry<String, Integer> entery : columnWight.entrySet()) {
-            sum += entery.getValue();
-        }
-        return sum;
     }
 
 }
