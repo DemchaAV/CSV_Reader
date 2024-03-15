@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,16 @@ listInt2.add(1);
 //        Conector conector = new Conector(arl, new int[]{2,5});
 //        System.out.println(conector.getValue());
 //        System.out.println(conector.getDoneList());
+        String path = "C:/Users/Demch/OneDrive/Рабочий стол/English learning/";
+        String curDateFormat = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String nameFile = "Favorites_" + curDateFormat + ".csv";
+        String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
+        Table table = new Table(path+nameFile);
+//        System.out.println(table.mapTable.keySet());
+//        System.out.println(table.mapTable);
+//        System.out.println(table.getLine(54));
+        table.getColumns(0).forEach(System.out::println);
+        System.out.println(table.getLine(7));
 
     }
 }
