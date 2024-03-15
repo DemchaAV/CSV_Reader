@@ -1,12 +1,10 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class CSV_Import {
     protected volatile boolean isReadingFinished = false; // Флаг завершения чтения
@@ -159,7 +157,7 @@ public class CSV_Import {
         return false;
     }
 
-    protected void info(String outputPath) {
+    protected void fileInfo(String outputPath) {
         File file = new File(outputPath);
 
         // Получаем размер файла

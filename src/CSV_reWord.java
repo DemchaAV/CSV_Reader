@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.stream.Collectors;
 
 public class CSV_reWord extends CSV_Import {
@@ -34,7 +33,7 @@ public class CSV_reWord extends CSV_Import {
         try {
             reader.join();
             writer.join();
-            info(outputPath);
+            fileInfo(outputPath);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             e.printStackTrace();
@@ -50,6 +49,13 @@ public class CSV_reWord extends CSV_Import {
     public void multithreading(String inPath, char separator, String wrapper, String outputPath, List<Integer> connectList, int... columns) {
         List<Integer> columnsList = Arrays.stream(columns).boxed().collect(Collectors.toList());
         multithreading(inPath, separator, wrapper, outputPath, connectList, columnsList);
+    }
+
+    public void multithreading(String inPath, char separator, String wrapper, String outputPath, String[] connectList, int... columns) {
+        List<Integer> connect = Arrays.stream(connectList)
+                .map(Integer::valueOf) // Преобразует каждую строку в Integer
+                .collect(Collectors.toList());
+        multithreading(inPath, separator, wrapper, outputPath, connect, columns);
     }
 
     private void threadReader(String inPath, char separator, String wrapper, List<Integer> connectList, List<Integer> columnsList) {

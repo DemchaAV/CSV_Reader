@@ -61,6 +61,17 @@ public class Table extends CSV_Import {
 
     }
 
+    public List<String> getLine(int numberLine) {
+        List<String> line = new ArrayList<>();
+        for (int i = 0; i < titleKeys.size(); i++) {
+            if(mapTable.get(titleKeys.get(i)).get(numberLine)==null) {
+                line.add("");
+            }
+            line.add(mapTable.get(titleKeys.get(i)).get(numberLine));
+        }
+        return line;
+    }
+
     private void putInMap(String line) {
         List<String> values;
         values = parseCsvLine(line);
@@ -80,17 +91,6 @@ public class Table extends CSV_Import {
             list = getLine(i);
             OUT.print(list);
         }
-    }
-
-    public List<String> getLine(int numberLine) {
-        List<String> line = new ArrayList<>();
-        for (int i = 0; i < titleKeys.size(); i++) {
-            if(mapTable.get(titleKeys.get(i)).get(numberLine)==null) {
-                line.add("");
-            }
-            line.add(mapTable.get(titleKeys.get(i)).get(numberLine));
-        }
-        return line;
     }
 
     public <K, V> Map<K, V> transferColomn(Map<K, V> mapIn, int... columns) {

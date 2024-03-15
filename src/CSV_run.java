@@ -1,10 +1,6 @@
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 class CSV_run {
     public void run() {
@@ -24,11 +20,8 @@ class CSV_run {
             System.out.println("Please write down below a list of columns for connect");
             Scanner scanner = new Scanner(System.in);
             String[] stringPackInt = scanner.nextLine().split(",");
-            List<Integer> intList = Arrays.stream(stringPackInt)
-                    .map(Integer::valueOf) // Преобразует каждую строку в Integer
-                    .collect(Collectors.toList()); // Собираем результат в список2
             csv.multithreading(
-                    path + nameFile, ';', null, path + newFileName, intList, 1, 2, 9, 3, 4);
+                    path + nameFile, ';', null, path + newFileName, stringPackInt, 1, 2, 9, 3, 4);
 
         }
         System.out.println("Spent time " + (System.nanoTime() - start) / 1000000 + " milisec");
