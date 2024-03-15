@@ -71,6 +71,16 @@ public class Table extends CSV_Import {
         }
         return line;
     }
+    public void deleteColumn(int number){
+        mapTable.remove(titleKeys.get(number));
+
+    }
+    public void deleteLine(int number){
+        for (int i = 0; i < titleKeys.size(); i++) {
+            mapTable.get(titleKeys.get(i)).remove(number);
+            amountLines = mapTable.get(titleKeys.get(i)).size();
+        }
+    }
 
     private void putInMap(String line) {
         List<String> values;

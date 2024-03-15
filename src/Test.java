@@ -33,6 +33,8 @@ listInt2.add(1);
         String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
         Table table = new Table(path+nameFile);
         table.print();
+        table.deleteLine(7);
+        table.print();
 
     }
 }

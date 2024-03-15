@@ -6,6 +6,7 @@ class Out {
     Map<String, Integer> columnWidth = new LinkedHashMap<>();
     List<String> keySet;
 
+
     /**
      * Calculation size of columns
      *
@@ -16,6 +17,10 @@ class Out {
         keySet = keys;
         //computation width columns
         columnWidth = autoWidthColumns(map, keys);
+    }
+
+    public void setKeySet(List<String> keySet) {
+        this.keySet = keySet;
     }
 
     public void print(List<String> line, boolean numeric) {
