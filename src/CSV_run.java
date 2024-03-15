@@ -18,8 +18,7 @@ class CSV_run {
         } catch (Exception e) {
             System.out.println(e.getMessage() );
             System.out.println("Please write down below a list of columns for connect");
-            Scanner scanner = new Scanner(System.in);
-            String[] stringPackInt = scanner.nextLine().split(",");
+            String[] stringPackInt = new Scanner(System.in).nextLine().split(",");
             csv.multithreading(
                     path + nameFile, ';', null, path + newFileName, stringPackInt, 1, 2, 9, 3, 4);
 
