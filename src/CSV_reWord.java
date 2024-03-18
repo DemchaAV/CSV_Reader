@@ -5,15 +5,17 @@ import java.util.stream.Collectors;
 
 public class CSV_reWord extends CSV_Import {
     /**
+     * Multithreading method to read and write CSV files concurrently, with options for data reformatting.
      *
-     * @param inPath  inPut Path. It is String to our file example "C:/Users/UserName/userFile.csv"
-     * @param separator  variable char to set separator between words for our construction of csv file
-     * @param wrapper  It`s take String parameter to wrapper columns you can put null if you don`t need to wrap our columns or eny character like " or '  etc
-     * @param outputPath  It`s path to save our new File
-     * @param connectList  This`s list contain columns which one will be connected together these columns should be in our columnsList below
-     * @param columnsList  Thi`s  list of columns witch one we will reformat, and reduce if we need before make sure the input file from inPath contain enough colums
-     * @throws RuntimeException En exception shows us if we put connectList which one is not contains in our columns list
+     * @param inPath       The input file path.
+     * @param separator    The separator character between words in the CSV file.
+     * @param wrapper      The wrapper string to enclose columns (null if not needed).
+     * @param outputPath   The output file path to save the modified CSV file.
+     * @param connectList  List of columns to be connected.
+     * @param columnsList  List of columns to reformat and reduce (ensure the input file contains enough columns).
+     * @throws RuntimeException  Throws an exception if the connectList contains columns not present in columnsList.
      */
+    // Overloaded methods for convenience
     public void multithreading(
             String inPath, char separator, String wrapper, String outputPath, List<Integer> connectList, List<Integer> columnsList)
             throws RuntimeException {

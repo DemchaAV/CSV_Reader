@@ -10,6 +10,11 @@ public class CSV_Import {
     protected volatile boolean isReadingFinished = false; // Флаг завершения чтения
     List<String> titleKeys;
     Table table;
+
+    public void setTitleKeys(List<String> titleKeys) {
+        this.titleKeys = titleKeys;
+    }
+
     volatile String titleNotify;
     AtomicInteger counter = new AtomicInteger();
     protected final ArrayBlockingQueue<String> abq = new ArrayBlockingQueue<>(100);

@@ -6,35 +6,55 @@ import java.util.List;
 public class Test {
     public static void main(String[] args) {
 
+        // Sample list of strings
         List<String> arl = new ArrayList<>();
-        arl.add("hello");//1
-        arl.add("ok");//2
-        arl.add("Poka");//3
-        arl.add("good bay");//4
-        arl.add("wether");//5
-        arl.add("chip");//6
-List<Integer> listInt = new ArrayList<>();
-listInt.add(2);
+        arl.add("hello");
+        arl.add("ok");
+        arl.add("Poka");
+        arl.add("good bay");
+        arl.add("weather");
+        arl.add("chip");
+
+        // Sample list of integers
+        List<Integer> listInt = new ArrayList<>();
+        listInt.add(2);
         listInt.add(6);
         listInt.add(3);
         listInt.add(1);
+
         List<Integer> listInt2 = new ArrayList<>();
-listInt2.add(9);
-listInt2.add(1);
-//        System.out.println(listInt.co);
+        listInt2.add(9);
+        listInt2.add(1);
 
-
-//        Conector conector = new Conector(arl, new int[]{2,5});
-//        System.out.println(conector.getValue());
-//        System.out.println(conector.getDoneList());
+        // Sample path and file names
         String path = "C:/Users/Demch/OneDrive/Рабочий стол/English learning/";
         String curDateFormat = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String nameFile = "Favorites_" + curDateFormat + ".csv";
         String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
-        Table table = new Table(path+nameFile);
-        table.print();
-        table.deleteLine(7);
-        table.print();
 
+        // Sample list of columns
+        List<Integer> columns = new ArrayList<>();
+        columns.add(2);
+        columns.add(1);
+
+        // Test list for Connector class
+        List<String> testList = new ArrayList<>();
+        testList.add("One");
+        testList.add("Two");
+        testList.add("Three");
+        testList.add("Four");
+        testList.add("Five");
+
+        // Create a Connector object
+        Connector connector = new Connector(testList, columns, null);
+
+        // Transform the list using the Connector object
+        List<String> out = connector.transformList(testList, columns, "\"");
+
+        // Output the results
+        System.out.println("Original List: " + testList);
+        System.out.println("Transformed List: " + out);
+        System.out.println("Done List: " + connector.getDoneList());
+        System.out.println("Key Set: " + connector.getKeySet());
     }
 }
