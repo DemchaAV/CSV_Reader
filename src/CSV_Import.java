@@ -27,15 +27,13 @@ public class CSV_Import {
     /**
      * method create title of our columns and create an information obout our exists columns in case errors
      *
-     * @param line input line from reading file
+     * @param values input line from reading file
      * @return boolean to change title status to false
      */
-    protected boolean isTitleStatus(String line) {
-        if (line == null) {
+    protected boolean isTitleStatus(List<String> values) {
+        if (values == null) {
             return true;
         }
-        List<String> values;
-        values = parseCsvLine(line);
         this.titleKeys = new ArrayList<>(values);
         StringBuilder titleNotify = new StringBuilder();
         for (int i = 0; i < values.size(); i++) {
@@ -43,6 +41,14 @@ public class CSV_Import {
         }
         this.titleNotify = titleNotify.toString();
         return false;
+    }
+    protected boolean isTitleStatus(String line) {
+        if (line == null) {
+            return true;
+        }
+        List<String> values;
+        values = parseCsvLine(line);
+       return isTitleStatus(values);
     }
 
     /**

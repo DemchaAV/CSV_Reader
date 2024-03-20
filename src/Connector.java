@@ -3,69 +3,38 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * The Connector class provides functionality to connect and transform lists of strings and integers.
- */
 public class Connector implements Combinable {
-    private List<Integer> doneList = new ArrayList<>(); // List to store indices of processed elements
-    private List<String> inList; // Input list of strings
-    private String value; // Combined string value
-    private List<Integer> connectColumns; // Columns to connect
+    private String value;
+    private List<Integer> doneList = new ArrayList<>();
+    private List<String> inList;
+    private List<String> outList = new ArrayList<>();
+    List<Integer> connectColumns;
 
-    private List<Integer> keySet; // Keys used during transformation
-
-    private List<String> newLine = new ArrayList<>(); // Transformed lines
-    private String wrapper; // Wrapper for transformation
-
-    /**
-     * Constructs a Connector object with the given input list and connect columns.
-     *
-     * @param inList         The input list of strings.
-     * @param connectColumns The columns to connect.
-     */
     public Connector(List<String> inList, List<Integer> connectColumns) {
         this.inList = inList;
         this.connectColumns = connectColumns;
+        connect();
     }
 
-    /**
-     * Constructs a Connector object with the given input list, connect columns, and wrapper.
-     *
-     * @param inList         The input list of strings.
-     * @param connectColumns The columns to connect.
-     * @param wrapper        The wrapper for transformation.
-     */
-    public Connector(List<String> inList, List<Integer> connectColumns, String wrapper) {
-        this(inList, connectColumns);
-        this.wrapper = wrapper;
-    }
-
-    /**
-     * Constructs a Connector object with the given input list and connect columns.
-     * @param inList The input list of strings.
-     * @param connectColumns The columns to connect.
-     */
     public Connector(List<String> inList, int[] connectColumns) {
         this.inList = inList;
         this.connectColumns = Arrays.stream(connectColumns).boxed().collect(Collectors.toList());
+        connect();
     }
 
-    /**
-     * Connects the elements of the input list based on the specified connect columns.
-     *
-     * @return The combined string value.
-     */
-    public String connect() {
-        return connect(this.inList, this.connectColumns);
+    public String getValue() {
+        return value;
     }
 
-    /**
-     * Connects the elements of the input list based on the specified connect columns.
-     * @param inList The input list of strings.
-     * @param connectColumns The columns to connect.
-     * @return The combined string value.
-     */
+     public String connect() {
+       return connect(this.inList, this.connectColumns);
+    }
+    public String connect(List<String> inList,int[] connectColumns) {
+        this.connectColumns = Arrays.stream(connectColumns).boxed().collect(Collectors.toList());
+        return connect(inList, this.connectColumns);
+    }
     public String connect(List<String> inList, List<Integer> connectColumns) {
+        connectColumns = connectColumns.stream().map(x -> --x).collect(Collectors.toList());
         StringBuilder connectedLine = new StringBuilder();
         for (int i = 0; i < connectColumns.size(); i++) {
             if (i > 0) {
@@ -74,69 +43,42 @@ public class Connector implements Combinable {
             connectedLine.append(inList.get(connectColumns.get(i)));
             doneList.add(connectColumns.get(i));
         }
-        value = connectedLine.toString().toLowerCase();
-        return value;
+        this.value = connectedLine.toString();
+        return connectedLine.toString();
     }
 
-    /**
-     * Transforms the input list based on the connect columns and the wrapper.
-     *
-     * @return The transformed list.
-     */
-    public List<String> transformList() {
-        return transformList(inList, connectColumns, wrapper);
+    public String connectAsList() {
+        return connect(this.inList, this.connectColumns);
     }
 
-    /**
-     * Transforms the input list based on the specified connect columns and wrapper.
-     *
-     * @param inList         The input list of strings.
-     * @param connectColumns The columns to connect.
-     * @param wrapper        The wrapper for transformation.
-     * @return The transformed list.
-     */
-    public List<String> transformList(List<String> inList, List<Integer> connectColumns, String wrapper) {
-        this.wrapper = (wrapper == null) ? "" : wrapper;
-        List<String> outList = new ArrayList<>();
-        keySet = new ArrayList<>();
+    public List<String> connectAsList(List<String> inList, int... connectColumns) {
+        return connectAsList(inList, Arrays.stream(connectColumns).boxed().collect(Collectors.toList()));
+    }
+
+    public List<String> connectAsList(List<String> inList, List<Integer> connectColumns) {
+        doneList.clear();
+        doneList = new ArrayList<>();
+        List<String> newList = new ArrayList<>();
         for (int i = 0; i < inList.size(); i++) {
             if (doneList.isEmpty()) {
                 if (connectColumns.contains(i)) {
-                    keySet.add(connectColumns.get(0));
-                    outList.add(wrapper + connect(inList, connectColumns) + wrapper);
+                    newList.add(connect(inList, connectColumns.stream().map(x -> ++x).collect(Collectors.toList())));
                 } else {
-                    keySet.add(i);
-                    outList.add(wrapper + inList.get(i) + wrapper);
+                    newList.add(inList.get(i));
                 }
             } else {
                 if (!doneList.contains(i)) {
-                    keySet.add(i);
-                    outList.add(wrapper + inList.get(i) + wrapper);
+                    newList.add(inList.get(i));
                 }
             }
+
         }
-        newLine = outList;
-        return outList;
+        this.outList = new ArrayList<>(newList);
+        return newList;
     }
 
-    /**
-     * Gets the list of indices that have been processed.
-     * @return The list of indices.
-     */
+
     public List<Integer> getDoneList() {
         return doneList;
-    }
-
-    /**
-     * Gets the combined string value.
-     *
-     * @return The combined string value.
-     */
-    public String getValue() {
-        return value;
-    }
-
-    public List<Integer> getKeySet() {
-        return keySet;
     }
 }

@@ -17,6 +17,11 @@ class Out {
         // Computing column widths
         columnWidth = autoWidthColumns(map, keys);
     }
+    public Out(Table table) {
+        keySet = table.titleKeys;
+        //computation width columns
+        columnWidth = autoWidthColumns(table.mapTable, table.titleKeys);
+    }
 
     /**
      * Sets a new set of column keys.
