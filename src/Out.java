@@ -6,30 +6,11 @@ class Out {
     Map<String, Integer> columnWidth = new LinkedHashMap<>(); // Width of each column
     List<String> keySet; // List of column keys
 
-    /**
-     * Class constructor.
-     *
-     * @param map  Data map for the table
-     * @param keys Order of columns
-     */
-    public Out(Map<String, List<String>> map, List<String> keys) {
-        keySet = keys;
-        // Computing column widths
-        columnWidth = autoWidthColumns(map, keys);
-    }
+
     public Out(Table table) {
         keySet = table.titleKeys;
         //computation width columns
         columnWidth = autoWidthColumns(table.mapTable, table.titleKeys);
-    }
-
-    /**
-     * Sets a new set of column keys.
-     *
-     * @param keySet New set of keys
-     */
-    public void setKeySet(List<String> keySet) {
-        this.keySet = keySet;
     }
     /**
      * Prints a data row in the table.
@@ -112,7 +93,7 @@ class Out {
                 s.append("_");
             }
         }
-        return s.toString() + "___";
+        return s + "___";
     }
 
     private String printSpace(int spaces) {
@@ -122,7 +103,7 @@ class Out {
                 s.append(" ");
             }
         }
-        return s.toString() + "││ ";
+        return s + "││ ";
     }
 
     /**

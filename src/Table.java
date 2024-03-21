@@ -6,15 +6,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class Table extends CSV_Import {
+public class Table extends CSV_Import implements Printable {
     ConcurrentHashMap<String, List<String>> mapTable = new ConcurrentHashMap<>();
     private volatile boolean isReadingFinished = false; // Флаг завершения чтения
     private boolean autoWightStatus = false;
     private int amountLines;
 
-    public void setOUT() {
+    public void updatePrintData() {
         this.OUT = new Out(this);
-        setHight();
+        setHeight();
     }
 
     private Out OUT;
@@ -53,7 +53,7 @@ public class Table extends CSV_Import {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            setHight();
+            setHeight();
             isReadingFinished = true; //make sure it is done
         }
     }
@@ -118,20 +118,31 @@ public class Table extends CSV_Import {
             kurkey = newTable.titleKeys.get(i);
             newTable.mapTable.put(kurkey, new ArrayList<>(this.mapTable.get(kurkey)));
         }
-        newTable.setOUT();
+        newTable.updatePrintData();
         return newTable;
     }
 
-    public void deleteColumn(int number){
-        mapTable.remove(titleKeys.get(number));
-        OUT = new Out(this);
-
-
+    public boolean deleteColumn(int number) {
+        --number;
+        if (number >= 0 && number < titleKeys.size()) {
+            mapTable.remove(titleKeys.remove(number)); // Удалить ключ и соответствующий столбец
+            updatePrintData();
+            return true;
+        }
+        return false;
     }
-    public void deleteLine(int number){
+
+    public boolean deleteLine(int number) {
+        --number;
+        if (number < amountLines && number >= 0) {
         for (int i = 0; i < titleKeys.size(); i++) {
             mapTable.get(titleKeys.get(i)).remove(number);
-            amountLines = mapTable.get(titleKeys.get(i)).size();
+        }
+            amountLines--;
+            updatePrintData();
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -148,7 +159,7 @@ public class Table extends CSV_Import {
         }
     }
 
-    public <K extends String, V extends List> void print() {
+    public void print() {
         boolean titleStatus = true;
         List<String> list;
         if (titleStatus){
@@ -179,18 +190,15 @@ public class Table extends CSV_Import {
             }
         }
 
-        outTable.setOUT();
+        outTable.updatePrintData();
         return outTable;
     }
 
-    private void setHight() {
-        int outTable1 = 0;
-        for (Map.Entry<String, List<String>> entery : this.mapTable.entrySet()) {
-            outTable1 = entery.getValue().size();
-            break;
+    private void setHeight() {
+        if (!mapTable.isEmpty()) {
+            int firstKeyListSize = mapTable.entrySet().iterator().next().getValue().size();
+            amountLines = firstKeyListSize;
         }
-        amountLines = outTable1;
-
     }
 
     public Table merridColumns(int... connect) {
