@@ -2,6 +2,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Test {
     public static void main(String[] args) {
@@ -35,7 +36,10 @@ listInt2.add(1);
 //        table.print();
        Table table1 =  table.merridColumns(1,8);
 //        System.out.println(table1.mapTable);
+//        table1.print();
+        table1.wrap("\"");
+//        table1.print();
+        table1 = table1.reduceColumns(2,1,5);
         table1.print();
-
     }
 }

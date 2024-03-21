@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 public class CSV_Import {
     protected volatile boolean isReadingFinished = false; // Флаг завершения чтения
     List<String> titleKeys;
-    Table table;
-
     public void setTitleKeys(List<String> titleKeys) {
         this.titleKeys = titleKeys;
     }
@@ -18,11 +16,6 @@ public class CSV_Import {
     volatile String titleNotify;
     AtomicInteger counter = new AtomicInteger();
     protected final ArrayBlockingQueue<String> abq = new ArrayBlockingQueue<>(100);
-    public Table importAsTable(String inPath) {
-        table = new Table(inPath);
-
-        return table;
-    }
 
     /**
      * method create title of our columns and create an information obout our exists columns in case errors

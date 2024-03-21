@@ -34,7 +34,7 @@ public class Connector implements Combinable {
         return connect(inList, this.connectColumns);
     }
     public String connect(List<String> inList, List<Integer> connectColumns) {
-        connectColumns = connectColumns.stream().map(x -> --x).collect(Collectors.toList());
+        connectColumns = adjustIndexes(connectColumns, -1);
         StringBuilder connectedLine = new StringBuilder();
         for (int i = 0; i < connectColumns.size(); i++) {
             if (i > 0) {
@@ -56,15 +56,15 @@ public class Connector implements Combinable {
     }
 
     public List<String> connectAsList(List<String> inList, List<Integer> connectColumns) {
-        doneList.clear();
         doneList = new ArrayList<>();
         List<String> newList = new ArrayList<>();
         for (int i = 0; i < inList.size(); i++) {
             if (doneList.isEmpty()) {
                 if (connectColumns.contains(i)) {
-                    newList.add(connect(inList, connectColumns.stream().map(x -> ++x).collect(Collectors.toList())));
+                    newList.add(connect(inList, adjustIndexes(connectColumns, +1)));
                 } else {
                     newList.add(inList.get(i));
+
                 }
             } else {
                 if (!doneList.contains(i)) {
@@ -76,6 +76,11 @@ public class Connector implements Combinable {
         this.outList = new ArrayList<>(newList);
         return newList;
     }
+
+    private List<Integer> adjustIndexes(List<Integer> connectColumns, int index) {
+        return connectColumns.stream().map(x -> x + index).collect(Collectors.toList());
+    }
+
 
 
     public List<Integer> getDoneList() {

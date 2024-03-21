@@ -1,5 +1,8 @@
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -8,6 +11,12 @@ public class Table extends CSV_Import {
     private volatile boolean isReadingFinished = false; // Флаг завершения чтения
     private boolean autoWightStatus = false;
     private int amountLines;
+
+    public void setOUT() {
+        this.OUT = new Out(this);
+        setHight();
+    }
+
     private Out OUT;
 
     public Table(String inPath) {
@@ -44,10 +53,7 @@ public class Table extends CSV_Import {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            for (Map.Entry<String, List<String>> entery : mapTable.entrySet()) {
-                amountLines = entery.getValue().size();
-                break;
-            }
+            setHight();
             isReadingFinished = true; //make sure it is done
         }
     }
@@ -59,12 +65,10 @@ public class Table extends CSV_Import {
             }
         }
     }
-
     public List<String> getColumns(int columnNumber) {
         return mapTable.get(titleKeys.get(columnNumber));
 
     }
-
     public List<String> getLine(int numberLine) {
         List<String> line = new ArrayList<>();
         for (int i = 0; i < titleKeys.size(); i++) {
@@ -75,8 +79,53 @@ public class Table extends CSV_Import {
         }
         return line;
     }
+
+    private String getLineAsString(int numberLine, char separator) {
+        if (numberLine >= amountLines || numberLine < 0) {
+            return "";
+        }
+
+        StringBuilder lineBuilder = new StringBuilder();
+        for (int i = 0; i < titleKeys.size(); i++) {
+            List<String> column = mapTable.get(titleKeys.get(i));
+            if (column != null && numberLine < column.size()) {
+                lineBuilder.append(column.get(numberLine));
+            }
+            if (i < titleKeys.size() - 1) {
+                lineBuilder.append(separator);
+            }
+        }
+
+        return lineBuilder.toString();
+    }
+
+    public Table reduceColumns(int... columns) {
+        return reduceColumns(Arrays.stream(columns).boxed().collect(Collectors.toList()));
+
+    }
+
+    public Table reduceColumns(List<Integer> columns) {
+        columns = adjustIndexes(columns, -1);
+        List<String> newOrderList = new ArrayList<>();
+        Table newTable = new Table();
+        newTable.titleKeys = new ArrayList<>();
+        for (int i = 0; i < columns.size(); i++) {
+            newTable.titleKeys.add(this.titleKeys.get(columns.get(i)));
+        }
+        newTable.setKeys();
+        String kurkey;
+        for (int i = 0; i < newTable.titleKeys.size(); i++) {
+            kurkey = newTable.titleKeys.get(i);
+            newTable.mapTable.put(kurkey, new ArrayList<>(this.mapTable.get(kurkey)));
+        }
+        newTable.setOUT();
+        return newTable;
+    }
+
     public void deleteColumn(int number){
         mapTable.remove(titleKeys.get(number));
+        OUT = new Out(this);
+
 
     }
     public void deleteLine(int number){
@@ -109,9 +158,10 @@ public class Table extends CSV_Import {
             list = getLine(i);
             OUT.print(list);
         }
+        System.out.println();
     }
 
-    public Table merridColumns(int... connect) {
+    public Table merridColumns(String wrapper, int... connect) {
         List<Integer> connectList = Arrays.stream(connect).boxed().collect(Collectors.toList());
         List<String> line;
         Table outTable = new Table();
@@ -125,49 +175,73 @@ public class Table extends CSV_Import {
                 outTable.setKeys();
 
             } else {
-                outTable.putInMap(line);
+                outTable.putInMap(wrapper(line, wrapper));
             }
         }
 
-        for (Map.Entry<String, List<String>> entery : outTable.mapTable.entrySet()) {
-            outTable.amountLines = entery.getValue().size();
-            break;
-        }
-
-        outTable.OUT = new Out(outTable);
+        outTable.setOUT();
         return outTable;
     }
 
+    private void setHight() {
+        int outTable1 = 0;
+        for (Map.Entry<String, List<String>> entery : this.mapTable.entrySet()) {
+            outTable1 = entery.getValue().size();
+            break;
+        }
+        amountLines = outTable1;
 
-    public <K extends String, V extends List> void write(Map<K, V> mapCSV, String outputPath, char separator) {
-        BufferedWriter bw;
-        Set<K> set = new LinkedHashSet<>(mapCSV.keySet());
-        List<K> keys = set.stream().toList();
-        try {
-            bw = new BufferedWriter(new FileWriter(outputPath));
-            if (mapCSV != null) {
-                for (int i = 0; i < mapCSV.get(keys.get(0)).size(); i++) {
-                    StringBuilder line = new StringBuilder();
-                    for (int j = 0; j < mapCSV.size(); j++) {
-                        String word;
-                        word = (String) mapCSV.get(keys.get(j)).get(i);
-                        line.append(word);
-                        if (j < mapCSV.size() - 1) {
-                            if (j == mapCSV.size()) {
+    }
 
-                                line.append(separator);
-                            }
-                            line.append(separator);
-                        }
-                    }
-                    bw.write(line.toString() + separator + "\n");
+    public Table merridColumns(int... connect) {
+        return merridColumns(null, connect);
+    }
 
-                }
-                bw.close();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public void wrap(String symbol) {
+        List<String> newList;
+        for (Map.Entry<String, List<String>> entry : mapTable.entrySet()) {
+            newList = entry.getValue().stream().map((x -> wrapper(x, symbol))).collect(Collectors.toList());
+            mapTable.put(entry.getKey(), newList);
         }
     }
 
+    private List<String> wrapper(List<String> inList, String symbol) {
+        if (symbol == null || symbol.length() == 0) {
+            return inList;
+        }
+        List<String> outList = new ArrayList<>();
+        for (String cell : inList) {
+            outList.add(wrapper(cell, symbol));
+        }
+        return outList;
+    }
+
+    private String wrapper(String cell, String symbol) {
+        if (cell == null || symbol == null) {
+            return cell;
+        }
+        return symbol + cell + symbol;
+
+    }
+
+
+    public void write(String outputPath, char separator) {
+        try (FileWriter fileWriter = new FileWriter(outputPath);
+             BufferedWriter bw = new BufferedWriter(fileWriter)) {
+            if (this.mapTable != null) {
+                String line;
+                for (int i = 0; i < amountLines; i++) {
+                    line = getLineAsString(i, separator);
+                    bw.write(line);
+                    bw.newLine();
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error with file operations", e);
+        }
+    }
+
+    private List<Integer> adjustIndexes(List<Integer> connectColumns, int index) {
+        return connectColumns.stream().map(x -> x + index).collect(Collectors.toList());
+    }
 }
