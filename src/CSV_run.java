@@ -18,7 +18,7 @@ class CSV_run {
         try {
             // Perform multithreading CSV processing with predefined column indices
             csv.multithreading(
-                    path + nameFile, ';', null, path + newFileName, new int[]{2, 9}, 1, 2, 9, 3, 4);
+                    path + nameFile, ';', "\"", path + newFileName, new int[]{2, 9}, 1, 2, 9, 3, 4);
         } catch (RuntimeException run) { // Handle RuntimeException
             run.printStackTrace(); // Print stack trace if an exception occurs
         } catch (Exception e) { // Handle other exceptions

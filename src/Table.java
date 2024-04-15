@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -10,6 +7,8 @@ public class Table extends CSV_Import implements Printable {
     ConcurrentHashMap<String, List<String>> mapTable = new ConcurrentHashMap<>();
     private volatile boolean isReadingFinished = false; // Флаг завершения чтения
     private boolean autoWightStatus = false;
+    private String currentCell;
+
     private int amountLines;
 
     public void updatePrintData() {
@@ -123,6 +122,7 @@ public class Table extends CSV_Import implements Printable {
     }
 
     public boolean deleteColumn(int number) {
+        //adjust index supposed to start from 1
         --number;
         if (number >= 0 && number < titleKeys.size()) {
             mapTable.remove(titleKeys.remove(number)); // Удалить ключ и соответствующий столбец
@@ -132,6 +132,66 @@ public class Table extends CSV_Import implements Printable {
         return false;
     }
 
+    /**
+     * This method provides capability to insert new column for our document
+     *
+     * @param position this value should be positive the inserting position after the current number
+     * @param titleKey - the unique name for tittle
+     * @return statust of insert may be more than 0 and not out of bound of table
+     */
+    public boolean insertColumn(int position, String titleKey) {
+        if (position < 0 || position > titleKeys.size()) {
+            return false;
+        }
+        titleKeys.add(position, titleKey);
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < amountLines; i++) {
+            list.add("");
+        }
+        mapTable.put(titleKey, list);
+        updatePrintData();
+        return true;
+    }
+
+    public boolean sortColumns(int... order) {
+        return sortColumns(Arrays.stream(order).boxed().toList());
+    }
+    public boolean sortColumns(Comparator<String> comparator){
+        titleKeys = titleKeys.stream().sorted(comparator).collect(Collectors.toList());
+        return true;
+    }
+    public boolean sortColumns(){
+        titleKeys = titleKeys.stream().sorted().collect(Collectors.toList());
+        updatePrintData();
+        return true;
+    }
+
+    public boolean sortColumns(List<Integer> order) {
+        List<String> newTittleList = new ArrayList<>();
+        if (!checkKeys(order)) {
+            return false;
+        }
+        for (int i = 0; i < order.size(); i++) {
+            newTittleList.add(titleKeys.get(order.get(i)));
+        }
+        titleKeys = newTittleList;
+        updatePrintData();
+        return true;
+    }
+
+    private boolean checkKeys(int... keys) {
+        return checkKeys(Arrays.stream(keys).boxed().toList());
+    }
+
+    private boolean checkKeys(List<Integer> keys) {
+        for (int i = 0; i < keys.size(); i++) {
+            int key = keys.get(i);
+            if (key > titleKeys.size() || key < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
     public boolean deleteLine(int number) {
         --number;
         if (number < amountLines && number >= 0) {
@@ -160,16 +220,54 @@ public class Table extends CSV_Import implements Printable {
     }
 
     public void print() {
+        print(0, amountLines);
+    }
+
+    public void print(int from, int till) {
+        if (from < 0 || till > amountLines) {
+            if (from < 0) {
+                System.out.println("Мalue must be greater than zero!" + "The current start line is: " + from);
+            }
+            if (till > amountLines) {
+                System.out.println("The value must be lower then amount of lines! Your current till value is: " + till);
+            }
+            return;
+        }
         boolean titleStatus = true;
         List<String> list;
-        if (titleStatus){
-            OUT.print(titleKeys,true);
+        if (titleStatus) {
+            System.out.print(OUT.print(titleKeys, true));
+        }
+        for (int i = from; i < till; i++) {
+            list = getLine(i);
+            System.out.print(OUT.print(list));
+        }
+        System.out.println();
+    }
+
+    /**
+     * This method provides a way to write your table with as a table view
+     *
+     * @param pathOut - pathOut for our document to save
+     * @throws IOException
+     */
+    public void writeTable(String pathOut) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(pathOut));
+        boolean titleStatus = true;
+        List<String> list;
+        if (titleStatus) {
+            writer.write(OUT.print(titleKeys, true));
+            writer.newLine();
         }
         for (int i = 0; i < amountLines; i++) {
             list = getLine(i);
-            OUT.print(list);
+            writer.write(OUT.print(list));
+            writer.newLine();
         }
-        System.out.println();
+    }
+
+    private void write() {
+
     }
 
     public Table merridColumns(String wrapper, int... connect) {

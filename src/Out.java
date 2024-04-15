@@ -18,16 +18,17 @@ class Out {
      * @param line    Data row to print
      * @param numeric Flag indicating if the data is numeric
      */
-    public void print(List<String> line, boolean numeric) {
+    public String print(List<String> line, boolean numeric) {
+        String outLine = "";
         if (line == null) {
-            return; // Prevent NullPointerException
+            return null; // Prevent NullPointerException
         }
         StringBuilder stringLine = new StringBuilder();
         for (int i = 0; i < keySet.size(); i++) {
             String word = line.get(i);
             String num = "";
             if (numeric) {
-                num = "(" + String.valueOf(i + 1) + "): ";
+                num = "(" + (i + 1) + "): ";
                 stringLine.append(num + word);
             } else {
                 stringLine.append(word);
@@ -36,22 +37,23 @@ class Out {
 
         }
         if (numeric) {
-            System.out.println(line(sum()));
-            System.out.println(line(sum()));
+            outLine = outLine + line(sum()) + "\n";
+            outLine = outLine + line(sum()) + "\n";
         }
-        System.out.println(stringLine);
+        outLine = outLine + stringLine + "\n";
         if (numeric) {
-            System.out.println(line(sum()));
+            outLine = outLine + line(sum()) + "\n";
         }
-        System.out.println(line(sum()));
+        outLine = outLine + line(sum()) + "\n";
+        return outLine;
     }
     /**
      * Prints a data row in the table without number formatting.
      *
      * @param line Data row to print
      */
-    public void print(List<String> line) {
-        print(line, false);
+    public String print(List<String> line) {
+       return print(line, false);
 
     }
     /**
