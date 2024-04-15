@@ -44,7 +44,6 @@ public class Table extends CSV_Import implements Printable {
                 if (titleStatus) {
                     titleStatus = isTitleStatus(line);
                     setKeys();
-
                 } else {
                     putInMap(line);
                 }
@@ -284,6 +283,7 @@ public class Table extends CSV_Import implements Printable {
             if (titleStatus) {
                 titleStatus = outTable.isTitleStatus(connector.connectAsList(this.titleKeys, connectList));
                 outTable.setKeys();
+                outTable.putInMap(wrapper(line, wrapper));
 
             } else {
                 outTable.putInMap(wrapper(line, wrapper));
