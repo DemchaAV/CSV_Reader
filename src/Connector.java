@@ -56,10 +56,14 @@ public class Connector implements Combinable {
     }
 
     public List<String> connectAsList(List<String> inList, List<Integer> connectColumns) {
+
+        //проверка циклом на совпадение
+
+
         doneList = new ArrayList<>();
         List<String> newList = new ArrayList<>();
         for (int i = 0; i < inList.size(); i++) {
-            if (doneList.isEmpty()) {
+            if (doneList.isEmpty()||doneList.size()==0) {
                 if (connectColumns.contains(i)) {
                     newList.add(connect(inList, adjustIndexes(connectColumns, +1)));
                 } else {
@@ -85,5 +89,26 @@ public class Connector implements Combinable {
 
     public List<Integer> getDoneList() {
         return doneList;
+    }
+}
+class TestConnect{
+    public static void main(String[] args) {
+
+        List<String> list = new ArrayList<>();
+        list.add("Odin");
+        list.add("Two");
+        list.add("Thr");
+        list.add("Four");
+        list.add("Five");
+        list.add("ee");
+        list.forEach(System.out::println);
+        System.out.println(list.size());
+        System.out.println("-----");
+
+        int[] conList = {2,5};
+        Connector connector = new Connector(list,conList);
+        List<String> outList = connector.connectAsList(list,conList);
+       outList.forEach(System.out::println);
+        System.out.println(outList.size());
     }
 }

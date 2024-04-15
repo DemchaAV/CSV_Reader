@@ -168,6 +168,7 @@ public class Table extends CSV_Import implements Printable {
 
     public boolean sortColumns(List<Integer> order) {
         List<String> newTittleList = new ArrayList<>();
+        order = adjustIndexes(order, -1);
         if (!checkKeys(order)) {
             return false;
         }
@@ -272,6 +273,7 @@ public class Table extends CSV_Import implements Printable {
 
     public Table merridColumns(String wrapper, int... connect) {
         List<Integer> connectList = Arrays.stream(connect).boxed().collect(Collectors.toList());
+        connectList = adjustIndexes(connectList,-1);
         List<String> line;
         Table outTable = new Table();
         boolean titleStatus = true;
