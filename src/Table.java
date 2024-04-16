@@ -155,7 +155,7 @@ public class Table extends CSV_Import implements Printable {
         return true;
     }
 
-    public boolean sortColumns(int... order) {
+    public Table sortColumns(int... order) {
         return sortColumns(Arrays.stream(order).boxed().toList());
     }
     public boolean sortColumns(Comparator<String> comparator){
@@ -168,18 +168,24 @@ public class Table extends CSV_Import implements Printable {
         return true;
     }
 
-    public boolean sortColumns(List<Integer> order) {
+    public Table sortColumns(List<Integer> order) {
         List<String> newTittleList = new ArrayList<>();
+        Table outTable = this;
         order = adjustIndexes(order, -1);
         if (!checkKeys(order)) {
-            return false;
+           return null;
         }
         for (int i = 0; i < order.size(); i++) {
-            newTittleList.add(titleKeys.get(order.get(i)));
+            newTittleList.add(outTable.titleKeys.get(order.get(i)));
         }
-        titleKeys = newTittleList;
-        updatePrintData();
-        return true;
+        outTable.titleKeys = newTittleList;
+        for (Map.Entry <String, List<String> >entry: outTable.mapTable.entrySet()){
+            if (!outTable.titleKeys.contains(entry.getKey())) {
+                outTable.mapTable.remove(entry.getKey());
+            }
+        }
+        outTable.updatePrintData();
+        return outTable;
     }
 
     private boolean checkKeys(int... keys) {

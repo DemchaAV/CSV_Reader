@@ -12,7 +12,7 @@ public class Main {
         table = table.merridColumns(2,9);
         table.insertColumn(1,"Transcription");
         table.print(0,1);
-        table.sortColumns(1,2,3,4,5);
+        table = table.sortColumns(1, 2, 3, 4, 5);
         table.wrap("\"");
         table.print(0,3);
         table.write(path + newFileName,';');
