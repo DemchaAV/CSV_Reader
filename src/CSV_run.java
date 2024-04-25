@@ -1,3 +1,5 @@
+import exporterData.CSV_reWord;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -13,7 +15,7 @@ class CSV_run {
         String nameFile = "Favorites_" + curDateFormat + ".csv";
         String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
 
-        CSV_reWord csv = new CSV_reWord(); // Create CSV_reWord object
+        CSV_reWord csv = new CSV_reWord(); // Create exporterData.CSV_reWord object
 
         try {
             // Perform multithreading CSV processing with predefined column indices

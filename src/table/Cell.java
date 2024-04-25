@@ -1,3 +1,5 @@
+package table;
+
 public class Cell {
     private String value;
     private int posX;

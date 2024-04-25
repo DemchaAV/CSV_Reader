@@ -1,5 +1,8 @@
+import table.Table;
+
 import java.io.IOException;
 import java.time.LocalDate;
+import static  table.Table.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -7,7 +10,6 @@ public class Main {
         String newFileName = "reWords_Transfer " + LocalDate.now() + ".csv";
         Table table = new Table(path + Table.currentReversoDateFile);
         table.writeTable(path + Table.currentReversoDateFile);
-        System.out.println(table.titleKeys);
         table.print(0,1);
         table = table.merridColumns(2,9);
         table.insertColumn(1,"Transcription");

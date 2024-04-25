@@ -1,3 +1,9 @@
+package table;
+
+import exporterData.CSV_Import;
+import printConsole.Out;
+import printConsole.Printable;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,7 +16,7 @@ public class Table extends CSV_Import implements Printable {
     private volatile boolean isReadingFinished = false; // Флаг завершения чтения
     private boolean autoWightStatus = false;
     private String currentCell;
-    static String currentReversoDateFile = "Favorites_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".csv";
+    public static String currentReversoDateFile = "Favorites_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".csv";
 
     private int amountLines;
 

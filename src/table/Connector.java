@@ -1,3 +1,5 @@
+package table;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,26 +91,5 @@ public class Connector implements Combinable {
 
     public List<Integer> getDoneList() {
         return doneList;
-    }
-}
-class TestConnect{
-    public static void main(String[] args) {
-
-        List<String> list = new ArrayList<>();
-        list.add("Odin");
-        list.add("Two");
-        list.add("Thr");
-        list.add("Four");
-        list.add("Five");
-        list.add("ee");
-        list.forEach(System.out::println);
-        System.out.println(list.size());
-        System.out.println("-----");
-
-        int[] conList = {2,5};
-        Connector connector = new Connector(list,conList);
-        List<String> outList = connector.connectAsList(list,conList);
-       outList.forEach(System.out::println);
-        System.out.println(outList.size());
     }
 }
