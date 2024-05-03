@@ -1,8 +1,8 @@
-package table;
+package main.table;
 
-import exporterData.CSV_Import;
-import printConsole.Out;
-import printConsole.Printable;
+import main.exporterData.CSV_Import;
+import main.printConsole.Out;
+import main.printConsole.Printable;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Table extends CSV_Import implements Printable {
-    ConcurrentHashMap<String, List<String>> mapTable = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, List<String>> mapTable = new ConcurrentHashMap<>();
     private volatile boolean isReadingFinished = false; // Флаг завершения чтения
     private boolean autoWightStatus = false;
     private String currentCell;
@@ -145,7 +145,7 @@ public class Table extends CSV_Import implements Printable {
      *
      * @param position this value should be positive the inserting position after the current number
      * @param titleKey - the unique name for tittle
-     * @return statust of insert may be more than 0 and not out of bound of table
+     * @return statust of insert may be more than 0 and not out of bound of main.table
      */
     public boolean insertColumn(int position, String titleKey) {
         if (position < 0 || position > titleKeys.size()) {
@@ -261,7 +261,7 @@ public class Table extends CSV_Import implements Printable {
     }
 
     /**
-     * This method provides a way to write your table with as a table view
+     * This method provides a way to write your main.table with as a main.table view with separators
      *
      * @param pathOut - pathOut for our document to save
      * @throws IOException
@@ -358,6 +358,7 @@ public class Table extends CSV_Import implements Printable {
                     bw.write(line);
                     bw.newLine();
                 }
+                System.out.println("File " + outputPath.replace('/', '\\') +" has been wrote successful! \n" + amountLines + " words.");
             }
         } catch (IOException e) {
             throw new RuntimeException("Error with file operations", e);

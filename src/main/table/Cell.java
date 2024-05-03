@@ -1,4 +1,4 @@
-package table;
+package main.table;
 
 public class Cell {
     private String value;

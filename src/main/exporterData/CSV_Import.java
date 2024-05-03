@@ -1,6 +1,6 @@
-package exporterData;
+package main.exporterData;
 
-import table.Connector;
+import main.table.Connector;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class CSV_Import {
     protected volatile boolean isReadingFinished = false; // Флаг завершения чтения
-    List<String> titleKeys;
+    public List<String> titleKeys;
     public void setTitleKeys(List<String> titleKeys) {
         this.titleKeys = titleKeys;
     }

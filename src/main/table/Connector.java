@@ -1,4 +1,4 @@
-package table;
+package main.table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +11,9 @@ public class Connector implements Combinable {
     private List<String> inList;
     private List<String> outList = new ArrayList<>();
     List<Integer> connectColumns;
+    public Connector(){
+
+    }
 
     public Connector(List<String> inList, List<Integer> connectColumns) {
         this.inList = inList;

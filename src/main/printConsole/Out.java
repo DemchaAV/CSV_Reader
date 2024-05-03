@@ -1,12 +1,12 @@
-package printConsole;
+package main.printConsole;
 
-import table.Table;
+import main.table.Table;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-class Out {
+public class Out {
     Map<String, Integer> columnWidth = new LinkedHashMap<>(); // Width of each column
     List<String> keySet; // List of column keys
 
@@ -17,7 +17,7 @@ class Out {
         columnWidth = autoWidthColumns(table.mapTable, table.titleKeys);
     }
     /**
-     * Prints a data row in the table.
+     * Prints a data row in the main.table.
      *
      * @param line    Data row to print
      * @param numeric Flag indicating if the data is numeric
@@ -52,7 +52,7 @@ class Out {
         return outLine;
     }
     /**
-     * Prints a data row in the table without number formatting.
+     * Prints a data row in the main.table without number formatting.
      *
      * @param line Data row to print
      */
